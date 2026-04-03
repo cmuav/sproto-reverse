@@ -5,10 +5,10 @@ import type { AddressBits, DeviceConfig, RegionDef, Transport } from "./types.js
 const DEFAULT_CONFIG: Required<DeviceConfig> = {
   baudRate: 38400,
   addressBits: 8,
-  messageTimeout: 1000,
+  messageTimeout: 3000,
   resendCount: 3,
-  maxDataLength: 128,
-  duplex: true,
+  maxDataLength: 16,
+  duplex: false,
 };
 
 function bitsFromAddressBits(ab: AddressBits): number {

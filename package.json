@@ -14,7 +14,9 @@
   "files": ["dist", "README.md", "LICENSE"],
   "scripts": {
     "build": "tsc",
-    "test": "node --experimental-strip-types src/test.ts",
+    "test": "bun run src/test.ts",
+    "test:probe": "bun run test/raw-probe.ts",
+    "test:device": "bun run test/device-test.ts",
     "prepublishOnly": "tsc"
   },
   "keywords": [
