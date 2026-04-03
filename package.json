@@ -1,0 +1,34 @@
+{
+  "name": "sproto-protocol",
+  "version": "0.1.0",
+  "description": "TypeScript implementation of the Sproto serial protocol used by Tribunus ESCs and other Sproto-based motor controllers.",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": ["dist", "README.md", "LICENSE"],
+  "scripts": {
+    "build": "tsc",
+    "test": "node --experimental-strip-types src/test.ts"
+  },
+  "keywords": [
+    "sproto",
+    "tribunus",
+    "esc",
+    "serial",
+    "protocol",
+    "motor-controller",
+    "mavlink",
+    "drone",
+    "uav"
+  ],
+  "license": "MIT",
+  "devDependencies": {
+    "typescript": "^5.8.3"
+  }
+}
