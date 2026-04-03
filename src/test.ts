@@ -125,6 +125,118 @@ const reparsed = parseSRec(regenerated);
 eq(reparsed.length, 2, "re-parsed entry count");
 eq(reparsed[0].data[0], 0x11, "re-parsed data preserved");
 
+// ── Tribunus module tests ────────────────────────────────────────────────────
+
+console.log("Tribunus enums...");
+
+import {
+  TribunusTypes, DeviceModes, BecVoltages, Protocols, RotationDirections,
+  ResetCodes, PwmModes, GovernorModes,
+  TribunusSystemProps, TribunusStateProps, TribunusSettingsProps, TribunusUserProps,
+  TRIBUNUS_SYSTEM_REGION, TRIBUNUS_STATE_REGION, TRIBUNUS_SETTINGS_REGION,
+  TRIBUNUS_USER_REGION, TRIBUNUS_REGIONS, TRIBUNUS_DEVICE_CONFIG,
+  TRIBUNUS_FW_SIGNATURE,
+  createTribunusDevice, extractBits,
+  type PropertyDef,
+} from "./tribunus.js";
+import type { Transport } from "./types.js";
+
+eq(TribunusTypes["6S_120"], 0x12, "TribunusTypes 6S_120");
+eq(TribunusTypes["14S_200"], 0x1c, "TribunusTypes 14S_200");
+eq(DeviceModes.AIRPLANE, 4, "DeviceModes AIRPLANE");
+eq(DeviceModes.AIRPLANE_WITH_REVERSE, 6, "DeviceModes AIRPLANE_WITH_REVERSE");
+eq(BecVoltages.BEC_5_1, 0, "BecVoltages BEC_5_1");
+eq(BecVoltages.BEC_DISABLED, 4, "BecVoltages BEC_DISABLED");
+eq(Protocols.STANDARD, 0, "Protocols STANDARD");
+eq(Protocols.FUTABA, 4, "Protocols FUTABA");
+eq(RotationDirections.CCW, 0, "RotationDirections CCW");
+eq(ResetCodes.OK, 0x00, "ResetCodes OK");
+eq(ResetCodes.UNKN, 0x7f, "ResetCodes UNKN");
+eq(PwmModes.COMPLIMENTARY, 1, "PwmModes COMPLIMENTARY");
+eq(GovernorModes.CUSTOM, 3, "GovernorModes CUSTOM");
+
+console.log("Tribunus region defs...");
+
+eq(TRIBUNUS_SYSTEM_REGION.number, 0, "system region number");
+eq(TRIBUNUS_SYSTEM_REGION.length, 20, "system region length");
+eq(TRIBUNUS_STATE_REGION.number, 1, "state region number");
+eq(TRIBUNUS_STATE_REGION.length, 20, "state region length");
+eq(TRIBUNUS_SETTINGS_REGION.number, 3, "settings region number");
+eq(TRIBUNUS_SETTINGS_REGION.length, 128, "settings region length");
+eq(TRIBUNUS_USER_REGION.number, 6, "user region number");
+eq(TRIBUNUS_USER_REGION.length, 12, "user region length");
+eq(TRIBUNUS_REGIONS.length, 8, "total region count");
+
+console.log("Tribunus config defaults...");
+
+eq(TRIBUNUS_DEVICE_CONFIG.baudRate, 38400, "default baudRate");
+eq(TRIBUNUS_DEVICE_CONFIG.duplex, false, "default duplex");
+eq(TRIBUNUS_DEVICE_CONFIG.maxDataLength, 16, "default maxDataLength");
+eq(TRIBUNUS_FW_SIGNATURE, 0x4e42, "firmware signature");
+
+console.log("Tribunus property maps...");
+
+const settingsKeys = Object.keys(TribunusSettingsProps);
+assert(settingsKeys.length >= 30, `settings has ${settingsKeys.length} params (>=30)`);
+eq(TribunusSettingsProps.deviceName.offset, 0, "deviceName offset");
+eq(TribunusSettingsProps.deviceName.type, "ascii", "deviceName type");
+eq(TribunusSettingsProps.mode.offset, 32, "mode offset");
+eq(TribunusSettingsProps.pGain.type, "iq22", "pGain type");
+eq(TribunusSettingsProps.polePairs.offset, 112, "polePairs offset");
+eq(TribunusSettingsProps.minVoltage.unit, "V", "minVoltage unit");
+
+eq(TribunusSystemProps.serialNumber.offset, 4, "serialNumber offset");
+eq(TribunusSystemProps.firmwareVersion.offset, 10, "firmwareVersion offset");
+
+eq(TribunusStateProps.batVolt.div, 10, "batVolt div");
+eq(TribunusStateProps.throttle.bits![0], 24, "throttle bits start");
+eq(TribunusStateProps.motorRPM.bits![0], 8, "motorRPM bits start");
+
+eq(TribunusUserProps.motorRunCount.offset, 2, "motorRunCount offset");
+eq(TribunusUserProps.totalMotorTime.div, 10, "totalMotorTime div");
+
+console.log("Tribunus factory...");
+
+const mockTransport: Transport = {
+  write: async () => {},
+  read: async (n: number) => new Uint8Array(n),
+  clear: async () => {},
+};
+
+const trib = createTribunusDevice(mockTransport);
+assert(trib.device !== null, "factory creates device");
+eq(trib.regions.system.number, 0, "factory system region");
+eq(trib.regions.system.byteLength, 20, "factory system byteLength");
+eq(trib.regions.state.number, 1, "factory state region");
+eq(trib.regions.settings.number, 3, "factory settings region");
+eq(trib.regions.settings.byteLength, 128, "factory settings byteLength");
+eq(trib.regions.user.number, 6, "factory user region");
+eq(trib.regions.firmware.number, 4, "factory firmware region");
+eq(trib.regions.log.number, 5, "factory log region");
+
+console.log("extractBits...");
+
+eq(extractBits(0xff000000, 24, 31), 0xff, "extractBits high byte");
+eq(extractBits(0x00ffff00, 8, 23), 0xffff, "extractBits mid 16 bits");
+eq(extractBits(0x000000ff, 0, 7), 0xff, "extractBits low byte");
+eq(extractBits(0xabcdef12, 0, 23), 0xcdef12, "extractBits 24-bit low");
+
+// Simulate reading bit-packed state data
+const stateRegion = trib.regions.state;
+// Write a known pattern: offset 0 = uint32 with activeTime in bits[0:23] and throttle in bits[24:31]
+const activeTimeTicks = 5000; // 5 seconds * 1000
+const throttleRaw = 150;     // 150/2 = 75%
+const packed = (throttleRaw << 24) | activeTimeTicks;
+const bytes = new Uint8Array(4);
+bytes[0] = packed & 0xff;
+bytes[1] = (packed >> 8) & 0xff;
+bytes[2] = (packed >> 16) & 0xff;
+bytes[3] = (packed >> 24) & 0xff;
+stateRegion.writeRaw(0, bytes);
+const raw32 = stateRegion.readUint32(0);
+eq(extractBits(raw32, 0, 23), activeTimeTicks, "state activeTime extraction");
+eq(extractBits(raw32, 24, 31), throttleRaw, "state throttle extraction");
+
 // ── Summary ──────────────────────────────────────────────────────────────────
 
 console.log(`\n${passed} passed, ${failed} failed`);

@@ -1,6 +1,6 @@
 {
   "name": "@cmuav/sproto-protocol",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "description": "TypeScript implementation of the Sproto serial protocol used by Tribunus ESCs and other Sproto-based motor controllers.",
   "type": "module",
   "main": "./dist/index.js",
