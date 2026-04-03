@@ -1,0 +1,6 @@
+src/
+tsconfig.json
+.git/
+node_modules/
+bun.lock
+src/test.ts

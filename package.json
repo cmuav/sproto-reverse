@@ -1,5 +1,5 @@
 {
-  "name": "sproto-protocol",
+  "name": "@cmuav/sproto-protocol",
   "version": "0.1.0",
   "description": "TypeScript implementation of the Sproto serial protocol used by Tribunus ESCs and other Sproto-based motor controllers.",
   "type": "module",
@@ -14,7 +14,8 @@
   "files": ["dist", "README.md", "LICENSE"],
   "scripts": {
     "build": "tsc",
-    "test": "node --experimental-strip-types src/test.ts"
+    "test": "node --experimental-strip-types src/test.ts",
+    "prepublishOnly": "tsc"
   },
   "keywords": [
     "sproto",
@@ -23,11 +24,23 @@
     "serial",
     "protocol",
     "motor-controller",
-    "mavlink",
     "drone",
-    "uav"
+    "uav",
+    "ardupilot"
   ],
+  "author": "cmuav",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/cmuav/sproto-reverse.git"
+  },
+  "homepage": "https://github.com/cmuav/sproto-reverse#readme",
+  "bugs": {
+    "url": "https://github.com/cmuav/sproto-reverse/issues"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
   "devDependencies": {
     "typescript": "^5.8.3"
   }
