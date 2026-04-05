@@ -162,7 +162,7 @@ eq(TRIBUNUS_SYSTEM_REGION.length, 20, "system region length");
 eq(TRIBUNUS_STATE_REGION.number, 1, "state region number");
 eq(TRIBUNUS_STATE_REGION.length, 20, "state region length");
 eq(TRIBUNUS_SETTINGS_REGION.number, 3, "settings region number");
-eq(TRIBUNUS_SETTINGS_REGION.length, 128, "settings region length");
+eq(TRIBUNUS_SETTINGS_REGION.length, 132, "settings region length");
 eq(TRIBUNUS_USER_REGION.number, 6, "user region number");
 eq(TRIBUNUS_USER_REGION.length, 12, "user region length");
 eq(TRIBUNUS_REGIONS.length, 8, "total region count");
@@ -171,7 +171,7 @@ console.log("Tribunus config defaults...");
 
 eq(TRIBUNUS_DEVICE_CONFIG.baudRate, 38400, "default baudRate");
 eq(TRIBUNUS_DEVICE_CONFIG.duplex, false, "default duplex");
-eq(TRIBUNUS_DEVICE_CONFIG.maxDataLength, 16, "default maxDataLength");
+eq(TRIBUNUS_DEVICE_CONFIG.maxDataLength, 32, "default maxDataLength");
 eq(TRIBUNUS_FW_SIGNATURE, 0x4e42, "firmware signature");
 
 console.log("Tribunus property maps...");
@@ -209,7 +209,7 @@ eq(trib.regions.system.number, 0, "factory system region");
 eq(trib.regions.system.byteLength, 20, "factory system byteLength");
 eq(trib.regions.state.number, 1, "factory state region");
 eq(trib.regions.settings.number, 3, "factory settings region");
-eq(trib.regions.settings.byteLength, 128, "factory settings byteLength");
+eq(trib.regions.settings.byteLength, 132, "factory settings byteLength");
 eq(trib.regions.user.number, 6, "factory user region");
 eq(trib.regions.firmware.number, 4, "factory firmware region");
 eq(trib.regions.log.number, 5, "factory log region");

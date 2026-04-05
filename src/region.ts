@@ -25,6 +25,9 @@ export class Region {
   readonly byteOrder16: ByteOrder16;
   readonly byteOrder32: ByteOrder32;
 
+  /** Wire address divisor (1 = byte, 2 = word). */
+  readonly addressDivisor: number;
+
   /** Raw buffer - `length * bits` bytes. */
   private readonly _data: Uint8Array;
 
@@ -35,6 +38,7 @@ export class Region {
     this.length = def.length;
     this.byteOrder16 = def.byteOrder16 ?? DEFAULT_BYTE_ORDER_16;
     this.byteOrder32 = def.byteOrder32 ?? DEFAULT_BYTE_ORDER_32;
+    this.addressDivisor = def.addressDivisor ?? 1;
     this._data = new Uint8Array(this.length * this.bits);
   }
 

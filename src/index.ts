@@ -21,9 +21,12 @@ export type {
 export {
   // Enums
   TribunusTypes,
+  TribunusIIITypes,
   DeviceModes,
   BecVoltages,
+  BecVoltagesIII,
   Protocols,
+  ProtocolsIII,
   RotationDirections,
   GovernorModes,
   PwmModes,
@@ -32,11 +35,14 @@ export {
   TemperatureUnits,
   SoundConfigurations,
   SyncStates,
+  VoltageLimitModes,
+  CpuTempLogging,
   ResetCodes,
   // Property maps
   TribunusSystemProps,
   TribunusStateProps,
   TribunusSettingsProps,
+  TRIBUNUS_SETTINGS_ORDER,
   TribunusUserProps,
   // Region defs
   TRIBUNUS_SYSTEM_REGION,
@@ -48,15 +54,28 @@ export {
   TRIBUNUS_USER_REGION,
   TRIBUNUS_ERASE_REGION,
   TRIBUNUS_REGIONS,
-  // Config & signature
+  // Config & signatures
   TRIBUNUS_DEVICE_CONFIG,
   TRIBUNUS_FW_SIGNATURE,
   TRIBUNUS_FW_SIGNATURE_OFFSET,
+  TRIBUNUS_SETTINGS_SIGNATURE,
+  TRIBUNUS_SETTINGS_SIGNATURE_OFFSET,
   // Factory
   createTribunusDevice,
   // Utility
   extractBits,
+  // Tribunus II
+  TribunusIISystemProps,
+  TribunusIIStateProps,
+  TribunusIISettingsProps,
+  TRIBUNUS_II_SETTINGS_ORDER,
+  TRIBUNUS_II_SYSTEM_REGION,
+  TRIBUNUS_II_STATE_REGION,
+  TRIBUNUS_II_SETTINGS_REGION,
+  TRIBUNUS_II_FIRMWARE_REGION,
+  createTribunusIIDevice,
   // Types
   type PropertyDef,
   type TribunusDevice,
+  type TribunusIIDevice,
 } from "./tribunus.js";

@@ -55,6 +55,14 @@ export interface RegionDef {
 
   /** Byte order for 32-bit reads/writes. Default: [0, 1, 2, 3] (little-endian). */
   byteOrder32?: ByteOrder32;
+
+  /**
+   * Wire address divisor for chunked reads/writes. The wire address is
+   * computed as `byteOffset / addressDivisor`. Default: 1 (byte addressing).
+   * Set to 2 for word-addressed regions where the ESC expects word addresses
+   * on the wire but the data payload is still in bytes.
+   */
+  addressDivisor?: number;
 }
 
 /**

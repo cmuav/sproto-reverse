@@ -168,17 +168,19 @@ export class SprotoDevice {
     const startAddr = start ?? region.offset;
     const totalBytes = length ?? region.length * this._bits;
     const maxChunk = this._config.maxDataLength;
+    const addrDiv = region.addressDivisor;
 
     let remaining = totalBytes;
-    let currentAddr = startAddr;
+    let byteOffset = startAddr;
 
     while (remaining > 0) {
       const chunkLen = Math.min(remaining, maxChunk);
-      const data = await this._transact(() => this.rawRead(region.number, currentAddr, chunkLen));
+      const wireAddr = byteOffset / addrDiv;
+      const data = await this._transact(() => this.rawRead(region.number, wireAddr, chunkLen));
 
-      region.load(data, currentAddr);
+      region.load(data, byteOffset);
 
-      currentAddr += maxChunk / this._bits;
+      byteOffset += chunkLen;
       remaining -= chunkLen;
 
       if (onProgress) {
@@ -206,23 +208,25 @@ export class SprotoDevice {
     const startAddr = start ?? region.offset;
     const totalBytes = length ?? region.length * this._bits;
     const maxChunk = this._config.maxDataLength;
+    const addrDiv = region.addressDivisor;
 
     let remaining = totalBytes;
-    let currentAddr = startAddr;
+    let byteOffset = startAddr;
 
     while (remaining > 0) {
       const chunkLen = Math.min(remaining, maxChunk);
-      const data = region.readRaw(currentAddr, chunkLen);
-      const acked = await this._transact(() => this.rawWrite(region.number, currentAddr, data));
+      const wireAddr = byteOffset / addrDiv;
+      const data = region.readRaw(byteOffset, chunkLen);
+      const acked = await this._transact(() => this.rawWrite(region.number, wireAddr, data));
 
       if (acked !== chunkLen) {
         throw new Error(
-          `Write to region ${region.number} at 0x${currentAddr.toString(16)}: ` +
+          `Write to region ${region.number} at 0x${byteOffset.toString(16)}: ` +
           `expected ack ${chunkLen}, got ${acked}`,
         );
       }
 
-      currentAddr += maxChunk / this._bits;
+      byteOffset += chunkLen;
       remaining -= chunkLen;
 
       if (onProgress) {
